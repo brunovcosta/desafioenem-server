@@ -9,4 +9,4 @@ handler.get('*', (req: express.Request, res: express.Response) => {
 });
 
 let server = new Server(handler);
-server.start(+process.env.PORT || 3000);
+server.start(+process.env.PORT || 3001);
