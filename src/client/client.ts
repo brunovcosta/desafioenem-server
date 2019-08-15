@@ -1,5 +1,4 @@
 import Player from '../common/player';
-import Question from '../common/question';
 import Game from '../common/game';
 
 export default class Client {
@@ -20,17 +19,17 @@ export default class Client {
 		}));
 	}
 
-	public answer(question: Question, answer: string) {
+	public answer(questionIndex: number, answer: string) {
 		this.send("ANSWER",{
 			answer,
-			questionIndex: question.index,
+			questionIndex,
 			playerIndex: this.player.index
 		});
 	}
 
-	public watch(question: Question) {
+	public watch(questionIndex: number) {
 		this.send("WATCH", {
-			questionIndex: question.index,
+			questionIndex,
 			playerIndex: this.player.index
 		});
 	}
