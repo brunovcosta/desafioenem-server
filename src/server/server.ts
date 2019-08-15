@@ -1,12 +1,11 @@
 import WebSocket from 'ws';
-import express from 'express';
 import http from 'http';
-import { resolve } from 'path';
+import express from 'express';
 import Game from '../common/game';
 
 export default class Server {
-	port: number;
-	app: express.Express;
+	handler: express.Express;
+	wss: WebSocket.Server;
 	channels: {
 		[channel: string]: {
 			sockets: WebSocket[],
@@ -14,23 +13,18 @@ export default class Server {
 		}
 	};
 
-	constructor(port: number) {
-		this.port = port;
-		this.app = express();
+	constructor(handler: any) {
+		this.handler
 		this.channels = {};
 	}
 
-	public start() {
-		this.app.get('*', (req: express.Request, res: express.Response) => {
-			res.sendFile(resolve(`./dist/client/${req.path}`));
-		});
+	public start(port: number) {
+		let server = http.createServer(this.handler);
+		server.listen(port);
+		console.log(`listening http://localhost:${port}`);
+		this.wss = new WebSocket.Server({ server });
 
-		let server = http.createServer(this.app);
-		server.listen(this.port);
-		console.log(`listening http://localhost:${this.port}`);
-		const wss = new WebSocket.Server({ server });
-
-		wss.on('connection', (socket: WebSocket, req: http.IncomingMessage) => {
+		this.wss.on('connection', (socket: WebSocket, req: http.IncomingMessage) => {
 			console.log('connection', req.url);
 			if (this.channels[req.url]) {
 				this.channels[req.url].sockets.push(socket);

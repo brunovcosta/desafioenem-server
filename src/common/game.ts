@@ -61,6 +61,8 @@ export default class Game {
 				}
 				break;
 			}
+			default:
+				throw new Error(`Wrong message action: ${message.action}`);
 		}
 	}
 }
