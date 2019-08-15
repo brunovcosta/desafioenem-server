@@ -14,7 +14,7 @@ export default class Server {
 	};
 
 	constructor(handler: any) {
-		this.handler
+		this.handler = handler;
 		this.channels = {};
 	}
 
