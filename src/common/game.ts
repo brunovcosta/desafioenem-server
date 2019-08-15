@@ -16,13 +16,13 @@ export default class Game {
 	public answer(player: Player, answer: string, question: Question) {
 		if (question.validate(answer)) {
 			question.block();
-			this.dropLastPlayer();
+			this.killLastPlayer();
 		} else {
-			this.dropPlayer(player);
+			player.kill();
 		}
 	}
 
-	public dropLastPlayer() {
+	public killLastPlayer() {
 		let player = this.players.reduce((acc, player) => {
 			if (acc.score > player.score) {
 				return player;
@@ -31,12 +31,7 @@ export default class Game {
 			}
 		});
 
-		this.dropPlayer(player);
-	}
-
-	public dropPlayer(player: Player) {
-		let index = this.players.indexOf(player);
-		this.players.splice(index, 1);
+		player.kill();
 	}
 
 	public leaderboard() {
@@ -52,7 +47,12 @@ export default class Game {
 		return null;
 	}
 
-	public update(message: string) {
-
+	public update(message: {action: string, payload: any}) {
+		switch(message.action) {
+			case 'WATCH':
+				let question = this.questions[message.payload.questionIndex];
+				let player = this.players[message.payload.playerIndex]
+				player.watch(question);
+		}
 	}
 }
