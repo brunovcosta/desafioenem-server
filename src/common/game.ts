@@ -13,14 +13,6 @@ export default class Game {
 		this.players.push(player);
 	}
 
-	public answer(player: Player, answer: string, question: Question) {
-		if (question.validate(answer)) {
-			question.block();
-			this.killLastPlayer();
-		} else {
-			player.kill();
-		}
-	}
 
 	public killLastPlayer() {
 		let player = this.players.reduce((acc, player) => {
@@ -49,10 +41,26 @@ export default class Game {
 
 	public update(message: {action: string, payload: any}) {
 		switch(message.action) {
-			case 'WATCH':
-				let question = this.questions[message.payload.questionIndex];
-				let player = this.players[message.payload.playerIndex]
+			case 'WATCH': {
+				let { questionIndex, playerIndex } = message.payload;
+				let question = this.questions[questionIndex];
+				let player = this.players[playerIndex]
 				player.watch(question);
+				break;
+			}
+			case 'ANSWER': {
+				let { questionIndex, playerIndex, answer } = message.payload;
+				let question = this.questions[questionIndex];
+				let player = this.players[playerIndex];
+
+				if (question.validate(answer)) {
+					question.block();
+					this.killLastPlayer();
+				} else {
+					player.kill();
+				}
+				break;
+			}
 		}
 	}
 }

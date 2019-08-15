@@ -2,6 +2,7 @@
 export default class Question {
 	answer: string;
 	state: "OPEN" | "BLOCKED"
+	index: number;
 
 	constructor() {
 		this.state = "OPEN";
