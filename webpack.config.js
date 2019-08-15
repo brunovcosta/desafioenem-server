@@ -21,15 +21,15 @@ const common = {
 			}
 		]
 	},
-	output: {
-		filename: '[name].js',
-		path: path.resolve(__dirname, 'dist'),
-	},
 };
 
 const client = {
 	...common,
 	target: 'web',
+	output: {
+		filename: 'bundle.js',
+		path: path.resolve(__dirname, 'dist/client'),
+	},
 	entry: './src/client/index.ts',
 	plugins: [
 		new HtmlWebpackPlugin({
@@ -47,6 +47,10 @@ const client = {
 const server = {
 	...common,
 	entry: './src/server/index.ts',
+	output: {
+		filename: 'bundle.js',
+		path: path.resolve(__dirname, 'dist/server'),
+	},
 	target: 'node',
 	plugins: [
 		new NodemonPlugin(),

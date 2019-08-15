@@ -5,7 +5,7 @@ import { resolve } from 'path';
 let handler = express();
 handler.get('*', (req: express.Request, res: express.Response) => {
 	console.log(req.path);
-	res.sendFile(resolve(`./dist/${req.path}`));
+	res.sendFile(resolve(`./dist/client/${req.path}`));
 });
 
 let server = new Server(handler);
