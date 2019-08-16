@@ -5,9 +5,12 @@ export default class Game {
 	public players: Player[];
 	public questions: Question[];
 	public interval: any;
+	public state: 'BEFORE' | 'DURING' | 'AFTER';
+
 	constructor() {
 		this.players = [];
 		this.questions = [];
+		this.state = 'BEFORE';
 	}
 
 	public connect(player: Player) {
@@ -48,6 +51,14 @@ export default class Game {
 			}
 			case 'TIME_KILL': {
 				this.killLastPlayer();
+				return;
+			}
+			case 'START_GAME': {
+				this.state = 'DURING';
+				return;
+			}
+			case 'END_GAME': {
+				this.state = 'AFTER';
 				return;
 			}
 			case 'DROP_PLAYER': {

@@ -17,6 +17,13 @@ export default class Server {
 
 	constructor(handler: any) {
 		this.handler = handler;
+		handler.get('/:channel/questions', (req: express.Request, res: express.Response) => {
+			let channel = this.channels[req.params.channel];
+			if (channel) {
+				res.send(channel.game.players.length);
+			} else {
+			}
+		});
 		this.channels = {};
 	}
 
