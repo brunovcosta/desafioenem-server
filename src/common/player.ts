@@ -5,6 +5,7 @@ export default class Player {
 	score: number;
 	index: number;
 	question: Question;
+	killedBy: Player;
 
 	constructor() {
 		this.state = "ALIVE";
@@ -15,8 +16,9 @@ export default class Player {
 		this.index = index;
 	}
 
-	public kill() {
+	public kill(player: Player = null) {
 		this.state = "DEAD";
+		this.killedBy = player
 	}
 
 	public drop() {
