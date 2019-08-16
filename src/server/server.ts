@@ -3,6 +3,10 @@ import http from 'http';
 import express from 'express';
 import Player from '../common/player';
 import Game from '../common/game';
+import ApolloClient from 'apollo-boost';
+import { HttpLink } from 'apollo-link-http';
+import gql from 'graphql-tag';
+import fetch from 'node-fetch';
 
 export default class Server {
 	handler: express.Express;
@@ -15,13 +19,36 @@ export default class Server {
 		}
 	};
 
+	public async loadQuestions() {
+		const client = new ApolloClient({
+			uri: 'https://staging.api.dex.paperx.com.br/graphql',
+			fetch: fetch as any
+		});
+
+		let data = await client.query({
+			query: gql`
+				query GetQuestions {
+					allQuestions(first: 100) {
+						nodes {
+							id
+						}
+						totalCount
+					}
+				}
+			`
+		});
+
+	}
+
 	constructor(handler: any) {
 		this.handler = handler;
 		handler.get('/:channel/questions', (req: express.Request, res: express.Response) => {
 			let channel = this.channels[req.params.channel];
+			//this.loadQuestions();
 			if (channel) {
 				res.send(channel.game.players.length);
 			} else {
+				throw new Error(`Channel '${req.params.channel}' does not exists!`);
 			}
 		});
 		this.channels = {};
@@ -34,7 +61,6 @@ export default class Server {
 		this.wss = new WebSocket.Server({ server });
 
 		this.wss.on('connection', (socket: WebSocket, req: http.IncomingMessage) => {
-			console.log('connection', req.url);
 			let channel = this.channels[req.url];
 			let player = new Player();
 			if (channel) {

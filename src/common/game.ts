@@ -29,6 +29,7 @@ export default class Game {
 		player.kill();
 	}
 
+
 	public leaderboard() {
 		return this.players.sort(player => -player.score);
 	}
