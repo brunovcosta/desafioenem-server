@@ -16,7 +16,7 @@ export default class Game {
 	}
 
 	private findLastPlayer(){
-		return this.players.reduce((acc, player) => {
+		return this.alivePlayers().reduce((acc, player) => {
 			if (acc.score > player.score) {
 				return player;
 			} else {
@@ -106,7 +106,7 @@ export default class Game {
 					answer,
 					playerIndex
 				};
-				let itsNotADuel = this.players.length != 2;
+				let itsNotADuel = this.alivePlayers().length != 2;
 				let onStreak = player.score % 3 == 0;
 
 				if (question.validate(answer)) {
@@ -122,7 +122,7 @@ export default class Game {
 						}
 					} else {
 						if(onStreak){
-							let adversary = this.players.filter((_,index) => {return index != playerIndex})[0];
+							let adversary = this.alivePlayers().filter((_,index) => {return index != playerIndex})[0];
 							adversary.gotHit();
 						}
 					}

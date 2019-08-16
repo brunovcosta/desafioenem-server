@@ -6,6 +6,7 @@ export default class Player {
 	public score: number;
 	public index: number;
 	public question: Question;
+	public questionsVisited: Array<Question>;
 	public killedBy: Player;
 	public kills: number;
 
@@ -48,6 +49,9 @@ export default class Player {
 	}
 
 	public watch(question: Question) {
+		if(this.questionsVisited.some((visitedQuestion) => { return visitedQuestion.index != question.index})){
+			this.questionsVisited.push(question);
+		}
 		this.question = question;
 	}
 }
