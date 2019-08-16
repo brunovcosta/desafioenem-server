@@ -42,6 +42,33 @@ export default class Server {
 
 	}
 
+	private startGame (
+		channel:{
+			sockets: any[];
+			game: Game;
+			player: Player;
+		}
+	){
+		for (let connection of channel.sockets) {
+			connection.send(
+				JSON.stringify({
+					action: "START_GAME",
+					payload: {}
+				})
+			);
+		}
+		setInterval(() => {
+			let message = {
+				action: "TIME_KILL",
+				payload: {}
+			};
+			channel.game.update(message);
+			for (let conn of channel.sockets) {
+				conn.send(JSON.stringify(message));
+			}
+		}, 60000);
+	};
+
 	constructor(handler: any) {
 		this.handler = handler;
 		handler.get('/:channel/questions', async (req: express.Request, res: express.Response) => {
@@ -79,22 +106,7 @@ export default class Server {
 				channel.sockets.push(socket);
 				channel.game.connect(player);
 				if(channel.game.alivePlayers().length == 100){
-					for (let connection of this.channels[channelName].sockets) {
-						connection.send(JSON.stringify({
-							action: "START_GAME",
-							payload: {}
-						}));
-					}
-					setInterval(() => {
-						let message = {
-							action: "TIME_KILL",
-							payload: {}
-						};
-						channel.game.update(message);
-						for (let conn of this.channels[channelName].sockets) {
-							conn.send(JSON.stringify(message));
-						}
-					}, 60000);
+					this.startGame(channel);
 				}
 			} else {
 				let game = new Game();
@@ -105,12 +117,7 @@ export default class Server {
 					player
 				}
 				setTimeout(() => {
-					for (let connection of this.channels[channelName].sockets) {
-						connection.send(JSON.stringify({
-							action: "START_GAME",
-							payload: {}
-						}));
-					}
+					this.startGame(channel)
 				}, 30000);
 			}
 			socket.send(JSON.stringify({
