@@ -20,7 +20,7 @@ export default class Player {
 
 	public kill(killer: Player = null) {
 		this.state = "DEAD";
-		this.killedBy = killer
+		this.killedBy = killer;
 		if (killer) {
 			killer.kills += 1;
 		}
