@@ -23,38 +23,18 @@ type Content = {
 }
 
 export default class Question {
-	answer: string;
 	state: "OPEN" | "BLOCKED"
 	index: number;
-	id: number;
-	content: any[];
-	source: any;
-	mode: string;
-	alternatives: number;
-	interactiveData: any[]
-	group: string;
-	contentsByQuestionId: {
-		nodes: Content[]
-	}
+	data: any;
 
-	assertionsByQuestionId: {
-		nodes: {
-			id: number;
-			questionId: number;
-			position: number;
-			correct: boolean;
-			contentsByAssertionId: {
-				nodes: Content[]
-			}
-		}[]
-	}
-
-	constructor() {
+	constructor(data: any, index: number) {
 		this.state = "OPEN";
+		this.data = data;
+		this.index = index;
 	}
 
 	public validate(assertionId: number) {
-		for (let assertion of this.assertionsByQuestionId.nodes) {
+		for (let assertion of this.data.assertionsByQuestionId.nodes) {
 			if (assertion.correct) {
 				return true;
 			}
