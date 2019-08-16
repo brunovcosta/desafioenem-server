@@ -31,6 +31,14 @@ export default class Server {
 			let channel = this.channels[req.url];
 			let player = new Player();
 			if (channel) {
+				for (let connection of this.channels[req.url].sockets) {
+					connection.send(JSON.stringify({
+						action: "ADD_PLAYER",
+						payload: {
+							playerIndex: channel.game.players.length - 1
+						}
+					}));
+				}
 				channel.sockets.push(socket);
 				channel.game.connect(player);
 			} else {
@@ -47,7 +55,7 @@ export default class Server {
 				payload: {
 					index: channel.game.players.length - 1
 				}
-			}))
+			}));
 			socket.send(this.channels[req.url].game.encode());
 			socket.on('message', (messageCode: string) => {
 				let message = JSON.parse(messageCode);
