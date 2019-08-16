@@ -72,12 +72,13 @@ export default class Server {
 			socket.on('close', () => {
 				let channel =this.channels[req.url];
 				let index = channel.sockets.indexOf(socket);
-				channel.game.players[index].drop();
+				let message = {
+					action: "DROP_PLAYER",
+					payload: { index }
+				};
+				channel.game.update(message);
 				for (let connection of channel.sockets) {
-					connection.send(JSON.stringify({
-						action: "DROP_PLAYER",
-						payload: { index }
-					}));
+					connection.send(JSON.stringify(message));
 				}
 			});
 		});

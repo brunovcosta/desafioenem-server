@@ -45,6 +45,10 @@ export default class Game {
 				this.players.push(player);
 				return;
 			}
+			case 'DROP_PLAYER': {
+				let { index } = message.payload;
+				this.players[index].drop();
+			}
 			case 'SET_INDEX': {
 				let { index } = message.payload;
 				player.setIndex(index);
