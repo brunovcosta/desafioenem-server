@@ -68,6 +68,8 @@ export default class Server {
 			let channel = this.channels[channelName];
 			let player = new Player();
 			if (channel) {
+				channel.sockets.push(socket);
+				channel.game.connect(player);
 				for (let connection of this.channels[channelName].sockets) {
 					connection.send(JSON.stringify({
 						action: "ADD_PLAYER",
@@ -76,8 +78,6 @@ export default class Server {
 						}
 					}));
 				}
-				channel.sockets.push(socket);
-				channel.game.connect(player);
 			} else {
 				let game = new Game();
 				setInterval(() => {
