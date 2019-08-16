@@ -32,7 +32,6 @@ export default class Game {
 				return acc;
 			}
 		});
-
 	}
 
 	public connect(player: Player) {
@@ -121,18 +120,18 @@ export default class Game {
 				return message;
 			}
 			case 'ANSWER': {
-				let { questionIndex, answer } = message.payload;
+				let { questionIndex, assertionId } = message.payload;
 				let question = this.questions[questionIndex];
 				let playerIndex = this.players.indexOf(player);
 				let payload =  {
 					questionIndex,
-					answer,
+					assertionId,
 					playerIndex
 				};
 				let itsNotADuel = this.alivePlayers().length != 2;
 				let onStreak = player.score % 3 == 0;
 
-				if (question.validate(answer)) {
+				if (question.validate(assertionId)) {
 					question.block();
 					player.answeredCorrectly();
 					if (itsNotADuel){

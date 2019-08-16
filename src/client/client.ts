@@ -21,9 +21,9 @@ export default class Client {
 		}));
 	}
 
-	public answer(questionIndex: number, answer: string) {
+	public answer(questionIndex: number, assertionId: number) {
 		this.send("ANSWER",{
-			answer,
+			assertionId,
 			questionIndex,
 			playerIndex: this.player.index
 		});

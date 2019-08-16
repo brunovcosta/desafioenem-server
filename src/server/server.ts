@@ -91,10 +91,9 @@ export default class Server {
 		this.handler = handler;
 		handler.get('/:channel/questions', async (req: express.Request, res: express.Response) => {
 			let channel = this.channels[req.params.channel];
-			let questions = await this.loadQuestions();
 			if (channel) {
 				res.setHeader('Content-Type', 'application/json');
-				res.send(questions);
+				res.send(channel.game.questions);
 			} else {
 				throw new Error(`Channel '${req.params.channel}' does not exists! The channels are ${Object.keys(this.channels)}`);
 			}
@@ -108,7 +107,7 @@ export default class Server {
 		console.log(`listening http://localhost:${port}`);
 		this.wss = new WebSocket.Server({ server });
 
-		this.wss.on('connection', (socket: WebSocket, req: http.IncomingMessage) => {
+		this.wss.on('connection', async (socket: WebSocket, req: http.IncomingMessage) => {
 			let channelName = req.url.substring(1);
 			let channel = this.channels[channelName];
 			let player = new Player();
@@ -128,6 +127,8 @@ export default class Server {
 				}
 			} else {
 				let game = new Game();
+				let questions = await this.loadQuestions();
+				channel.game.questions = questions;
 				game.connect(player);
 				channel = this.channels[channelName] = {
 					sockets: [socket],
