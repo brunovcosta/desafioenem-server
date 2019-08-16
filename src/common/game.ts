@@ -48,6 +48,10 @@ export default class Game {
 		player.kill(killer);
 	}
 
+	public leaderScore() {
+		return this.leaderboard()[0].score;
+	}
+
 	public leaderboard() {
 		return this.players.sort(player => -player.score);
 	}
