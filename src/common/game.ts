@@ -1,6 +1,15 @@
 import Player from './player';
 import Question from './question';
 
+type GameCode = {
+	state: Game['state'];
+	players: {
+		state: Player['state'];
+		questionIndex: number;
+		killerIndex: number;
+	}[]
+};
+
 export default class Game {
 	public players: Player[];
 	public questions: Question[];
@@ -51,6 +60,23 @@ export default class Game {
 		return retval;
 	}
 
+	public setup(gameCode: GameCode) {
+		this.players = gameCode.players.map(code => {
+			let player = new Player();
+			player.state = code.state;
+			player.question = this.questions[code.questionIndex];
+			return player;
+		});
+		this.state = gameCode.state;
+	}
+
+	public encode(): GameCode {
+		return {
+			state: this.state,
+			players: this.players.map(player => player.encode())
+		}
+	}
+
 	private preupdate(message: {action: string, payload: any}, player: Player = null) {
 		switch(message.action) {
 			case 'ADD_PLAYER': {
@@ -75,12 +101,9 @@ export default class Game {
 				this.players[index].drop();
 				return;
 			}
-			case 'SET_INDEX': {
-				let { index, playersCount } = message.payload;
-				while (playersCount > this.players.length) {
-					this.players.push(new Player());
-				}
-				player.setIndex(index);
+			case 'SETUP': {
+				let { game } = message.payload;
+				this.setup(game);
 				return;
 			}
 			case 'WATCH': {

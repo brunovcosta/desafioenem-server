@@ -121,10 +121,9 @@ export default class Server {
 				}, 30000);
 			}
 			socket.send(JSON.stringify({
-				action: "SET_INDEX",
+				action: "SETUP",
 				payload: {
-					index: channel.game.players.indexOf(player),
-					playersCount: channel.game.players.length
+					game: channel.game.encode()
 				}
 			}));
 			socket.on('message', (messageCode: string) => {

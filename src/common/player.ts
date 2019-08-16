@@ -33,4 +33,12 @@ export default class Player {
 	public watch(question: Question) {
 		this.question = question;
 	}
+	
+	public encode() {
+		return {
+			state: this.state,
+			questionIndex: this.question ? this.question.index : null,
+			killerIndex: this.killedBy ? this.killedBy.index : null
+		}
+	}
 }
