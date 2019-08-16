@@ -98,6 +98,12 @@ export default class Server {
 				}
 			}
 			socket.send(JSON.stringify({
+				action: "ADD_PLAYER",
+				payload: {
+					playerIndex: channel.game.players.length - 1
+				}
+			}));
+			socket.send(JSON.stringify({
 				action: "SET_INDEX",
 				payload: {
 					index: channel.game.players.length - 1

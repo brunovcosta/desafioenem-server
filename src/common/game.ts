@@ -35,9 +35,7 @@ export default class Game {
 	}
 
 	public alivePlayers() {
-		return this.players.filter(player => {
-			player.state === 'ALIVE';
-		});
+		return this.players.filter(player => player.state == 'ALIVE');
 	}
 
 	public update(message: {action: string, payload: any}, player: Player = null) {
