@@ -1,6 +1,5 @@
 import Player from '../common/player';
 import Game from '../common/game';
-
 export default class Client {
 	connection: WebSocket;
 	player: Player;

@@ -6,15 +6,21 @@ export default class Game {
 	public questions: Question[];
 	public interval: any;
 	public state: 'BEFORE' | 'DURING' | 'AFTER';
+	private listeners: Function[];
 
 	constructor() {
 		this.players = [];
 		this.questions = [];
 		this.state = 'BEFORE';
+		this.listeners = [];
 	}
 
 	public connect(player: Player) {
 		this.players.push(player);
+	}
+
+	public listen(fn: Function) {
+		this.listeners.push(fn);
 	}
 
 	public killLastPlayer(killer: Player = null) {
@@ -38,6 +44,14 @@ export default class Game {
 	}
 
 	public update(message: {action: string, payload: any}, player: Player = null) {
+		let retval = this.preupdate(message, player);
+		for (let fn of this.listeners) {
+			fn();
+		}
+		return retval;
+	}
+
+	private preupdate(message: {action: string, payload: any}, player: Player = null) {
 		switch(message.action) {
 			case 'ADD_PLAYER': {
 				let player = new Player();
