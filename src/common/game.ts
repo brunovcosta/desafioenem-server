@@ -43,33 +43,47 @@ export default class Game {
 			case 'ADD_PLAYER': {
 				let player = new Player();
 				this.players.push(player);
-				break;
+				return;
 			}
 			case 'SET_INDEX': {
 				let { index } = message.payload;
 				player.setIndex(index);
-				break;
+				return;
 			}
 			case 'WATCH': {
 				let { questionIndex } = message.payload;
 				let question = this.questions[questionIndex];
 				player.watch(question);
-				break;
+				return message;
 			}
 			case 'ANSWER': {
 				let { questionIndex, answer } = message.payload;
 				let question = this.questions[questionIndex];
+				let playerIndex = this.players.indexOf(player);
+				let payload =  {
+					questionIndex,
+					answer,
+					playerIndex
+				};
 
 				if (question.validate(answer)) {
 					question.block();
 					this.killLastPlayer();
+					return {
+						action: "CORRECT_ANSWER",
+						payload
+					}
 				} else {
 					player.kill();
+					return {
+						action: "WRONG_ANSWER",
+						payload
+					}
 				}
-				break;
 			}
-			default:
+			default: {
 				throw new Error(`Wrong message action: ${message.action}`);
+			}
 		}
 	}
 }

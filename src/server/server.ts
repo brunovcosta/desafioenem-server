@@ -61,16 +61,24 @@ export default class Server {
 				let message = JSON.parse(messageCode);
 				let channel = this.channels[req.url]
 				let player = channel.player;
-				channel.game.update(message, player);
+				let responseMessage = channel.game.update(message, player);
 				for (let connection of this.channels[req.url].sockets) {
 					if (socket !== connection) {
-						connection.send(messageCode);
+						connection.send(JSON.stringify(responseMessage));
 					}
 				}
 			});
 
 			socket.on('close', () => {
-				this.channels[req.url].sockets.splice(this.channels[req.url].sockets.indexOf(socket), 1);
+				let channel =this.channels[req.url];
+				let index = channel.sockets.indexOf(socket);
+				channel.game.players[index].drop();
+				for (let connection of channel.sockets) {
+					connection.send(JSON.stringify({
+						action: "DROP_PLAYER",
+						payload: { index }
+					}));
+				}
 			});
 		});
 	}
