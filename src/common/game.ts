@@ -5,7 +5,7 @@ export default class Game {
 	public players: Player[];
 	public questions: Question[];
 	public interval: any;
-	public state: 'BEFORE' | 'DURING' | 'AFTER';
+	public state: 'BEFORE' | 'DURING' | 'AFTER' | 'CANCELED';
 	private listeners: Function[];
 
 	constructor() {
@@ -68,6 +68,10 @@ export default class Game {
 			}
 			case 'END_GAME': {
 				this.state = 'AFTER';
+				return;
+			}
+			case 'CANCEL_GAME': {
+				this.state = 'CANCELED';
 				return;
 			}
 			case 'DROP_PLAYER': {

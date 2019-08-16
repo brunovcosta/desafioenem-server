@@ -8,15 +8,17 @@ import { HttpLink } from 'apollo-link-http';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';
 
+interface Channel {
+	sockets: WebSocket[];
+	game: Game;
+	player: Player;
+}
+
 export default class Server {
 	handler: express.Express;
 	wss: WebSocket.Server;
-	channels: {
-		[channel: string]: {
-			sockets: WebSocket[];
-			game: Game;
-			player: Player;
-		}
+	channels: { 
+		[channel: string]: Channel
 	};
 
 	public async loadQuestions() {
@@ -42,13 +44,18 @@ export default class Server {
 
 	}
 
-	private startGame (
-		channel:{
-			sockets: any[];
-			game: Game;
-			player: Player;
+	private startGame ( channel: Channel ) {
+		if(channel.game.alivePlayers().length == 1){
+			for (let connection of channel.sockets) {
+				connection.send(
+					JSON.stringify({
+						action: "CANCEL_GAME",
+						payload: {}
+					})
+				);
+			}
+			return;
 		}
-	){
 		for (let connection of channel.sockets) {
 			connection.send(
 				JSON.stringify({
@@ -56,8 +63,12 @@ export default class Server {
 					payload: {}
 				})
 			);
-		}
-		setInterval(() => {
+		}	
+		this.setTimeKill(channel);
+	};
+
+	private setTimeKill ( channel: Channel ){
+		const timeout = setInterval(() => {
 			let message = {
 				action: "TIME_KILL",
 				payload: {}
@@ -66,8 +77,18 @@ export default class Server {
 			for (let conn of channel.sockets) {
 				conn.send(JSON.stringify(message));
 			}
-		}, 60000);
-	};
+			if( channel.game.alivePlayers().length == 1){
+				for (let conn of channel.sockets) {
+					let endGameMessage = {
+						action: "END_GAME",
+						payload: {}
+					};
+					clearInterval(timeout);
+					conn.send(JSON.stringify(endGameMessage));
+				}
+			}
+		}, 10000);
+	}
 
 	constructor(handler: any) {
 		this.handler = handler;
@@ -117,8 +138,8 @@ export default class Server {
 					player
 				}
 				setTimeout(() => {
-					this.startGame(channel)
-				}, 30000);
+					this.startGame(channel);
+				}, 10000);
 			}
 			socket.send(JSON.stringify({
 				action: "SET_INDEX",
