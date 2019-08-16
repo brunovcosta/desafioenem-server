@@ -1,0 +1,74 @@
+query {
+	allQuestions(first: 10) {
+		nodes {
+			id
+				content
+				answer
+				source
+				mode
+				alternatives
+				interactiveData
+				group
+
+				contentsByQuestionId {
+					nodes {
+						id
+							position
+							questionId
+							textByTextId {
+								id
+									body
+									alignment
+									source
+							}
+						imageByImageId {
+							id
+								url
+								source
+								resizeFactor
+								description
+						}
+						videoByVideoId {
+							id
+								providerId
+								providerType
+						}
+					}
+				}
+
+			assertionsByQuestionId {
+				nodes {
+					id
+						questionId
+						position
+						correct
+						contentsByAssertionId {
+							nodes {
+								id
+									position
+									assertionId
+									textByTextId {
+										id
+											body
+											alignment
+											source
+									}
+								imageByImageId {
+									id
+										url
+										source
+										resizeFactor
+										description
+								}
+								videoByVideoId {
+									id
+										providerId
+										providerType
+								}
+							}
+						}
+				}
+			}
+		}
+	}
+}

@@ -7,6 +7,7 @@ import ApolloClient from 'apollo-boost';
 import { HttpLink } from 'apollo-link-http';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';
+import questionsQuery from './questions.graphql';
 
 interface Channel {
 	sockets: WebSocket[];
@@ -21,23 +22,19 @@ export default class Server {
 		[channel: string]: Channel
 	};
 
-	public async loadQuestions() {
+	public async loadQuestions(headers: any = {}) {
 		const client = new ApolloClient({
 			uri: 'https://staging.api.dex.paperx.com.br/graphql',
-			fetch: fetch as any
+			fetch: fetch as any,
+			request: operation => {
+				operation.setContext({
+					headers
+				});
+			}
 		});
 
 		let response = await client.query({
-			query: gql`
-				query GetQuestions {
-					allQuestions(first: 100) {
-						nodes {
-							id
-						}
-						totalCount
-					}
-				}
-			`
+			query: questionsQuery
 		});
 
 		return response.data.allQuestions.nodes;
