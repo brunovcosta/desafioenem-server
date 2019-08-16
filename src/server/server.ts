@@ -91,9 +91,7 @@ export default class Server {
 		this.handler = handler;
 		handler.get('/:channel/questions', async (req: express.Request, res: express.Response) => {
 			let channel = this.channels[req.params.channel];
-			let questions = await this.loadQuestions({
-				Authorization: req.headers.Authorization
-			});
+			let questions = await this.loadQuestions();
 			if (channel) {
 				res.setHeader('Content-Type', 'application/json');
 				res.send(questions);
