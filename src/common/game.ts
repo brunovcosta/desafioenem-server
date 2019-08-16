@@ -30,7 +30,13 @@ export default class Game {
 	}
 
 	public leaderboard() {
-		return this.players.sort((player) => -player.score);
+		return this.players.sort(player => -player.score);
+	}
+
+	public alivePlayers() {
+		return this.players.filter(player => {
+			player.state === 'ALIVE';
+		});
 	}
 
 	public update(message: {action: string, payload: any}, player: Player = null) {
