@@ -133,6 +133,58 @@ export default class Game {
 				player.watch(question);
 				return message;
 			}
+			case 'CORRECT_ANSWER': {
+				let { questionIndex, assertionId } = message.payload;
+				let question = this.questions[questionIndex];
+				let playerIndex = this.players.indexOf(player);
+				let payload =  {
+					questionIndex,
+					assertionId,
+					playerIndex
+				};
+				let itsNotADuel = this.alivePlayers().length != 2;
+				let onStreak = player.score % 3 == 0;
+				if (question && question.validate(assertionId)) {
+					question.block();
+					player.answeredCorrectly();
+					if (itsNotADuel) {
+						if (onStreak) {
+							if (this.findLastPlayer() == player){
+								player.scoreExtraPoints();
+							} else {
+								console.log('killed the last player');
+								this.killLastPlayer(player);
+							}
+						}
+					} else {
+						if(onStreak){
+							let adversary = this.alivePlayers().filter((_,index) => {return index != playerIndex})[0];
+							adversary.gotHit();
+						}
+					}
+					return {
+						action: "CORRECT_ANSWER",
+						payload
+					}
+				}
+			}
+			case 'WRONG_ANSWER': {
+				let { questionIndex, assertionId } = message.payload;
+				let question = this.questions[questionIndex];
+				let playerIndex = this.players.indexOf(player);
+				let payload =  {
+					questionIndex,
+					assertionId,
+					playerIndex
+				};
+				let itsNotADuel = this.alivePlayers().length != 2;
+				let onStreak = player.score % 3 == 0;
+				player.gotHit();
+				return {
+					action: "WRONG_ANSWER",
+					payload
+				}
+			}	
 			case 'ANSWER': {
 				let { questionIndex, assertionId } = message.payload;
 				let question = this.questions[questionIndex];
@@ -150,10 +202,8 @@ export default class Game {
 					if (itsNotADuel){
 						if (onStreak){
 							if (this.findLastPlayer() == player){
-								console.log('im last player mother fucker');
 								player.scoreExtraPoints();
 							} else {
-								console.log('killing one fucker');
 								this.killLastPlayer(player);
 							}
 						}

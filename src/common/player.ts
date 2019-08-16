@@ -14,6 +14,8 @@ export default class Player {
 		this.state = "ALIVE";
 		this.score = 18;
 		this.kills = 0;
+		this.score = 0;
+		this.correctAnswers = 0;
 		this.questionsVisited = [];
 	}
 
