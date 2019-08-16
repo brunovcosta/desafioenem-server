@@ -73,7 +73,6 @@ export default class Server {
 					index: channel.game.players.length - 1
 				}
 			}));
-			socket.send(this.channels[req.url].game.encode());
 			socket.on('message', (messageCode: string) => {
 				let message = JSON.parse(messageCode);
 				let channel = this.channels[req.url]

@@ -33,15 +33,6 @@ export default class Game {
 		return this.players.sort((player) => -player.score);
 	}
 
-	// Message management
-	public static decode(message: string): Game {
-		return null;
-	}
-
-	public encode(): string {
-		return null;
-	}
-
 	public update(message: {action: string, payload: any}, player: Player = null) {
 		switch(message.action) {
 			case 'ADD_PLAYER': {
