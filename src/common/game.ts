@@ -53,6 +53,10 @@ export default class Game {
 		}
 	}
 
+	public leaderScore() {
+		return this.leaderboard()[0].score;
+	}
+
 	public leaderboard() {
 		return this.players.sort(player => -player.score);
 	}
@@ -126,18 +130,18 @@ export default class Game {
 				return message;
 			}
 			case 'ANSWER': {
-				let { questionIndex, answer } = message.payload;
+				let { questionIndex, assertionId } = message.payload;
 				let question = this.questions[questionIndex];
 				let playerIndex = this.players.indexOf(player);
 				let payload =  {
 					questionIndex,
-					answer,
+					assertionId,
 					playerIndex
 				};
 				let itsNotADuel = this.alivePlayers().length != 2;
 				let onStreak = player.score % 3 == 0;
 
-				if (question && question.validate(answer)) {
+				if (question && question.validate(assertionId)) {
 					question.block();
 					player.answeredCorrectly();
 					if (itsNotADuel){

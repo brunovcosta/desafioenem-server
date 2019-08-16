@@ -14,6 +14,7 @@ export default class Player {
 		this.state = "ALIVE";
 		this.score = 18;
 		this.kills = 0;
+		this.questionsVisited = [];
 	}
 
 	public answeredCorrectly() {
@@ -49,7 +50,7 @@ export default class Player {
 	}
 
 	public watch(question: Question) {
-		if(this.questionsVisited && this.questionsVisited.some((visitedQuestion) => { return visitedQuestion.index != question.index})){
+		if (this.questionsVisited && this.questionsVisited.some((visitedQuestion) => { return visitedQuestion.index != question.index})){
 			this.questionsVisited.push(question);
 		}
 		this.question = question;
