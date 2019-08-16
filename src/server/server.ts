@@ -112,7 +112,7 @@ export default class Server {
 			let channel = this.channels[channelName];
 			let player = new Player();
 			if (channel) {
-				for (let connection of this.channels[channelName].sockets) {
+				for (let connection of channel.sockets) {
 					connection.send(JSON.stringify({
 						action: "ADD_PLAYER",
 						payload: {
@@ -128,8 +128,8 @@ export default class Server {
 			} else {
 				let game = new Game();
 				let questions = await this.loadQuestions();
-				channel.game.questions = questions;
 				game.connect(player);
+				game.questions = questions;
 				channel = this.channels[channelName] = {
 					sockets: [socket],
 					game,
