@@ -21,7 +21,9 @@ export default class Player {
 	public kill(killer: Player = null) {
 		this.state = "DEAD";
 		this.killedBy = killer
-		killer.kills += 1;
+		if (killer) {
+			killer.kills += 1;
+		}
 	}
 
 	public drop() {
