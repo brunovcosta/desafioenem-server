@@ -10,6 +10,10 @@ export default class Player {
 		this.score = 0;
 	}
 
+	public setIndex(index: number) {
+		this.index = index;
+	}
+
 	public kill() {
 		this.state = "DEAD";
 	}

@@ -28,17 +28,26 @@ export default class Server {
 
 		this.wss.on('connection', (socket: WebSocket, req: http.IncomingMessage) => {
 			console.log('connection', req.url);
-			if (this.channels[req.url]) {
-				this.channels[req.url].sockets.push(socket);
-				let player = new Player();
-				this.channels[req.url].game.connect(player);
+			let channel = this.channels[req.url];
+			let player = new Player();
+			if (channel) {
+				channel.sockets.push(socket);
+				channel.game.connect(player);
 			} else {
-				this.channels[req.url] = {
+				let game = new Game();
+				game.connect(player);
+				channel = this.channels[req.url] = {
 					sockets: [socket],
-					game: new Game(),
-					player: new Player()
+					game,
+					player
 				}
 			}
+			socket.send(JSON.stringify({
+				action: "SET_INDEX",
+				payload: {
+					index: channel.game.players.length - 1
+				}
+			}))
 			socket.send(this.channels[req.url].game.encode());
 			socket.on('message', (messageCode: string) => {
 				let message = JSON.parse(messageCode);

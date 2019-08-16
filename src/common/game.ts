@@ -40,6 +40,11 @@ export default class Game {
 
 	public update(message: {action: string, payload: any}, player: Player = null) {
 		switch(message.action) {
+			case 'SET_INDEX': {
+				let { index } = message.payload;
+				player.setIndex(index);
+				break;
+			}
 			case 'WATCH': {
 				let { questionIndex } = message.payload;
 				let question = this.questions[questionIndex];
