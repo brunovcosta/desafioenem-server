@@ -48,7 +48,8 @@ export default class Game {
 	}
 
 	public leaderScore() {
-		return this.leaderboard()[0].score;
+		const leader = this.leaderboard()[0];
+		return (leader && leader.score) || 0;
 	}
 
 	public leaderboard() {
