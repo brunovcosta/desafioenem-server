@@ -1,13 +1,12 @@
 import Client from './client';
-import Player from '../common/player';
-import Question from '../common/player';
-import Game from '../common/game';
 
-console.log(Client);
+window.onload = () => {
+	let client = new Client();
+	console.log(client);
 
-export default {
-	Client,
-	Game,
-	Player,
-	Question
-};
+	let btn = document.getElementById("send-message");
+	btn.onclick = () => {
+		client.watch(123);
+	};
+}
+

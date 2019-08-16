@@ -13,7 +13,6 @@ export default class Game {
 		this.players.push(player);
 	}
 
-
 	public killLastPlayer() {
 		let player = this.players.reduce((acc, player) => {
 			if (acc.score > player.score) {
@@ -39,19 +38,17 @@ export default class Game {
 		return null;
 	}
 
-	public update(message: {action: string, payload: any}) {
+	public update(message: {action: string, payload: any}, player: Player = null) {
 		switch(message.action) {
 			case 'WATCH': {
-				let { questionIndex, playerIndex } = message.payload;
+				let { questionIndex } = message.payload;
 				let question = this.questions[questionIndex];
-				let player = this.players[playerIndex]
 				player.watch(question);
 				break;
 			}
 			case 'ANSWER': {
-				let { questionIndex, playerIndex, answer } = message.payload;
+				let { questionIndex, answer } = message.payload;
 				let question = this.questions[questionIndex];
-				let player = this.players[playerIndex];
 
 				if (question.validate(answer)) {
 					question.block();

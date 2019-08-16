@@ -5,8 +5,10 @@ export default class Client {
 	connection: WebSocket;
 	player: Player;
 	game: Game;
-	constructor(url: string, channel = "default") {
+	constructor(url: string = null, channel = "default") {
 		this.game = new Game();
+		this.player = new Player();
+
 		this.connection = new WebSocket(`${location.protocol === 'http:' ? 'ws' : 'wss'}://${url || 'localhost:3001'}/${channel}`);
 		this.connection.onmessage = (evt: MessageEvent) => {
 			this.game.update(JSON.parse(evt.data));

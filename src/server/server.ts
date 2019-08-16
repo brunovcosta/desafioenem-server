@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import http from 'http';
 import express from 'express';
+import Player from '../common/player';
 import Game from '../common/game';
 
 export default class Server {
@@ -8,8 +9,9 @@ export default class Server {
 	wss: WebSocket.Server;
 	channels: {
 		[channel: string]: {
-			sockets: WebSocket[],
-				game: Game
+			sockets: WebSocket[];
+			game: Game;
+			player: Player;
 		}
 	};
 
@@ -28,15 +30,21 @@ export default class Server {
 			console.log('connection', req.url);
 			if (this.channels[req.url]) {
 				this.channels[req.url].sockets.push(socket);
+				let player = new Player();
+				this.channels[req.url].game.connect(player);
 			} else {
 				this.channels[req.url] = {
 					sockets: [socket],
-					game: new Game()
+					game: new Game(),
+					player: new Player()
 				}
 			}
 			socket.send(this.channels[req.url].game.encode());
 			socket.on('message', (messageCode: string) => {
-				this.channels[req.url].game.update(JSON.parse(messageCode));
+				let message = JSON.parse(messageCode);
+				let channel = this.channels[req.url]
+				let player = channel.player;
+				channel.game.update(message, player);
 				for (let connection of this.channels[req.url].sockets) {
 					if (socket !== connection) {
 						connection.send(messageCode);
