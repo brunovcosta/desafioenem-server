@@ -12,7 +12,7 @@ export default class Player {
 
 	constructor() {
 		this.state = "ALIVE";
-		this.score = 18;
+		this.score = 6;
 		this.kills = 0;
 		this.questionsVisited = [];
 	}
