@@ -123,7 +123,7 @@ export default class Server {
 				}
 				channel.sockets.push(socket);
 				channel.game.connect(player);
-				if(channel.game.alivePlayers().length >= 3){
+				if(channel.game.alivePlayers().length === 3){
 					this.startGame(channel);
 				}
 			} else {

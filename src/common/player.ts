@@ -49,7 +49,7 @@ export default class Player {
 	}
 
 	public watch(question: Question) {
-		if(this.questionsVisited.some((visitedQuestion) => { return visitedQuestion.index != question.index})){
+		if(this.questionsVisited && this.questionsVisited.some((visitedQuestion) => { return visitedQuestion.index != question.index})){
 			this.questionsVisited.push(question);
 		}
 		this.question = question;

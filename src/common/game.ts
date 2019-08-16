@@ -137,7 +137,7 @@ export default class Game {
 				let itsNotADuel = this.alivePlayers().length != 2;
 				let onStreak = player.score % 3 == 0;
 
-				if (question.validate(answer)) {
+				if (question && question.validate(answer)) {
 					question.block();
 					player.answeredCorrectly();
 					if (itsNotADuel){
