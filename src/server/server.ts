@@ -93,6 +93,7 @@ export default class Server {
 			let channel = this.channels[req.params.channel];
 			if (channel) {
 				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Access-Control-Allow-Origin", "*");
 				res.send(channel.game.questions);
 			} else {
 				throw new Error(`Channel '${req.params.channel}' does not exists! The channels are ${Object.keys(this.channels)}`);
