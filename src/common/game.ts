@@ -46,7 +46,7 @@ export default class Game {
 	public update(message: {action: string, payload: any}, player: Player = null) {
 		let retval = this.preupdate(message, player);
 		for (let fn of this.listeners) {
-			fn();
+			fn(message);
 		}
 		return retval;
 	}
