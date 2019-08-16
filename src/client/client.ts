@@ -9,6 +9,7 @@ export default class Client {
 		this.player = new Player();
 		this.connection = new WebSocket(`${location.protocol === 'http:' ? 'ws' : 'wss'}://${url || 'localhost:3001'}/${channel}`);
 		this.connection.onmessage = (evt: MessageEvent) => {
+			console.log('here -> ', evt.data);
 			this.game.update(JSON.parse(evt.data), this.player);
 		};
 	}
