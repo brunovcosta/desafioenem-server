@@ -17,7 +17,7 @@ export default class Game {
 		this.players.push(player);
 	}
 
-	public killLastPlayer() {
+	public killLastPlayer(killer: Player = null) {
 		let player = this.players.reduce((acc, player) => {
 			if (acc.score > player.score) {
 				return player;
@@ -26,18 +26,15 @@ export default class Game {
 			}
 		});
 
-		player.kill();
+		player.kill(killer);
 	}
-
 
 	public leaderboard() {
 		return this.players.sort(player => -player.score);
 	}
 
 	public alivePlayers() {
-		return this.players.filter(player => {
-			player.state === 'ALIVE';
-		});
+		return this.players.filter(player => player.state == 'ALIVE');
 	}
 
 	public update(message: {action: string, payload: any}, player: Player = null) {
@@ -87,7 +84,7 @@ export default class Game {
 
 				if (question.validate(answer)) {
 					question.block();
-					this.killLastPlayer();
+					this.killLastPlayer(player);
 					return {
 						action: "CORRECT_ANSWER",
 						payload
