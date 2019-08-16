@@ -15,6 +15,17 @@ export default class Game {
 		this.listeners = [];
 	}
 
+	private findLastPlayer(){
+		return this.players.reduce((acc, player) => {
+			if (acc.score > player.score) {
+				return player;
+			} else {
+				return acc;
+			}
+		});
+
+	}
+
 	public connect(player: Player) {
 		this.players.push(player);
 	}
@@ -24,14 +35,7 @@ export default class Game {
 	}
 
 	public killLastPlayer(killer: Player = null) {
-		let player = this.players.reduce((acc, player) => {
-			if (acc.score > player.score) {
-				return player;
-			} else {
-				return acc;
-			}
-		});
-
+		let player = this.findLastPlayer();
 		player.kill(killer);
 	}
 
@@ -102,16 +106,32 @@ export default class Game {
 					answer,
 					playerIndex
 				};
+				let itsNotADuel = this.players.length != 2;
+				let onStreak = player.score % 3 == 0;
 
 				if (question.validate(answer)) {
 					question.block();
-					this.killLastPlayer(player);
+					player.answeredCorrectly();
+					if (itsNotADuel){
+						if (onStreak){
+							if (this.findLastPlayer() == player){
+								player.scoreExtraPoints();
+							} else {
+								this.killLastPlayer(player);
+							}
+						}
+					} else {
+						if(onStreak){
+							let adversary = this.players.filter((_,index) => {return index != playerIndex})[0];
+							adversary.gotHit();
+						}
+					}
 					return {
 						action: "CORRECT_ANSWER",
 						payload
 					}
 				} else {
-					player.kill();
+					player.gotHit();
 					return {
 						action: "WRONG_ANSWER",
 						payload
