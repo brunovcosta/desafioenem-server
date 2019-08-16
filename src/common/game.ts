@@ -76,7 +76,10 @@ export default class Game {
 				return;
 			}
 			case 'SET_INDEX': {
-				let { index } = message.payload;
+				let { index, playersCount } = message.payload;
+				while (playersCount > this.players.length) {
+					this.players.push(new Player());
+				}
 				player.setIndex(index);
 				return;
 			}
