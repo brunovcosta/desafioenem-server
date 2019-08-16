@@ -68,6 +68,14 @@ export default class Server {
 			let channel = this.channels[channelName];
 			let player = new Player();
 			if (channel) {
+				for (let connection of this.channels[channelName].sockets) {
+					connection.send(JSON.stringify({
+						action: "ADD_PLAYER",
+						payload: {
+							playerIndex: channel.game.players.length - 1
+						}
+					}));
+				}
 				channel.sockets.push(socket);
 				channel.game.connect(player);
 				if(channel.game.alivePlayers().length == 100){
@@ -105,18 +113,11 @@ export default class Server {
 					}
 				}, 30000);
 			}
-			for (let connection of this.channels[channelName].sockets) {
-				connection.send(JSON.stringify({
-					action: "ADD_PLAYER",
-					payload: {
-						playerIndex: channel.game.players.length - 1
-					}
-				}));
-			}
 			socket.send(JSON.stringify({
 				action: "SET_INDEX",
 				payload: {
-					index: channel.game.players.length - 1
+					index: channel.game.players.indexOf(player),
+					playersCount: channel.game.players.length
 				}
 			}));
 			socket.on('message', (messageCode: string) => {
