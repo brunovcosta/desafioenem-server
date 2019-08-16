@@ -4,8 +4,10 @@ import { resolve } from 'path';
 
 let handler = express();
 handler.get('*', (req: express.Request, res: express.Response) => {
-	console.log(req.path);
 	res.sendFile(resolve(`./dist/client/${req.path}`));
+});
+handler.get('/', (req: express.Request, res: express.Response) => {
+	res.sendFile(resolve(`./dist/client/index.html`));
 });
 
 let server = new Server(handler);
