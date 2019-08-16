@@ -115,7 +115,9 @@ export default class Game {
 			}
 			case 'DROP_PLAYER': {
 				let { index } = message.payload;
-				this.players[index].drop();
+				if (this.players && this.players[index]) {
+					this.players[index].drop();
+				}
 				return;
 			}
 			case 'SETUP': {
@@ -140,15 +142,17 @@ export default class Game {
 				};
 				let itsNotADuel = this.alivePlayers().length != 2;
 				let onStreak = player.score % 3 == 0;
-
+				
 				if (question && question.validate(assertionId)) {
 					question.block();
 					player.answeredCorrectly();
 					if (itsNotADuel){
 						if (onStreak){
 							if (this.findLastPlayer() == player){
+								console.log('im last player mother fucker')
 								player.scoreExtraPoints();
 							} else {
+								console.log('killing one fucker')
 								this.killLastPlayer(player);
 							}
 						}
