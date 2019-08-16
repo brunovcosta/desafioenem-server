@@ -109,9 +109,7 @@ export default class Server {
 				let player = channel.player;
 				let responseMessage = channel.game.update(message, player);
 				for (let connection of this.channels[channelName].sockets) {
-					if (socket !== connection) {
-						connection.send(JSON.stringify(responseMessage));
-					}
+					connection.send(JSON.stringify(responseMessage));
 				}
 			});
 
