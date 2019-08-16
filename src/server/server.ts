@@ -43,6 +43,16 @@ export default class Server {
 				channel.game.connect(player);
 			} else {
 				let game = new Game();
+				setInterval(() => {
+					let message = {
+						action: "TIME_KILL",
+						payload: {}
+					};
+					game.update(message);
+					for (let conn of this.channels[req.url].sockets) {
+						conn.send(JSON.stringify(message));
+					}
+				}, 10000);
 				game.connect(player);
 				channel = this.channels[req.url] = {
 					sockets: [socket],

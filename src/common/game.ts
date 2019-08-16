@@ -4,6 +4,7 @@ import Question from './question';
 export default class Game {
 	public players: Player[];
 	public questions: Question[];
+	public interval: any;
 	constructor() {
 		this.players = [];
 		this.questions = [];
@@ -45,9 +46,14 @@ export default class Game {
 				this.players.push(player);
 				return;
 			}
+			case 'TIME_KILL': {
+				this.killLastPlayer();
+				return;
+			}
 			case 'DROP_PLAYER': {
 				let { index } = message.payload;
 				this.players[index].drop();
+				return;
 			}
 			case 'SET_INDEX': {
 				let { index } = message.payload;
