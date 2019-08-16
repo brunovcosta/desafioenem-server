@@ -25,14 +25,17 @@ export default class Game {
 	}
 
 	private findLastPlayer(){
-		return this.alivePlayers().reduce((acc, player) => {
-			if (acc.score > player.score) {
-				return player;
-			} else {
-				return acc;
-			}
-		});
-
+		if (this.alivePlayers() && this.alivePlayers().length > 0) {
+			return this.alivePlayers().reduce((acc, player) => {
+				if (acc.score > player.score) {
+					return player;
+				} else {
+					return acc;
+				}
+			});
+		} else {
+			return undefined;
+		}
 	}
 
 	public connect(player: Player) {
@@ -45,7 +48,9 @@ export default class Game {
 
 	public killLastPlayer(killer: Player = null) {
 		let player = this.findLastPlayer();
-		player.kill(killer);
+		if (player) {
+			player.kill(killer);
+		}
 	}
 
 	public leaderboard() {

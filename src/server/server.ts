@@ -87,7 +87,7 @@ export default class Server {
 					conn.send(JSON.stringify(endGameMessage));
 				}
 			}
-		}, 10000);
+		}, 1000000);
 	}
 
 	constructor(handler: any) {
@@ -126,7 +126,7 @@ export default class Server {
 				}
 				channel.sockets.push(socket);
 				channel.game.connect(player);
-				if(channel.game.alivePlayers().length == 100){
+				if(channel.game.alivePlayers().length >= 3){
 					this.startGame(channel);
 				}
 			} else {
@@ -138,8 +138,9 @@ export default class Server {
 					player
 				}
 				setTimeout(() => {
+					console.log('starting game');
 					this.startGame(channel);
-				}, 10000);
+				}, 10000000);
 			}
 			socket.send(JSON.stringify({
 				action: "SETUP",
