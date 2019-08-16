@@ -25,7 +25,7 @@ export default class Server {
 			fetch: fetch as any
 		});
 
-		let data = await client.query({
+		let response = await client.query({
 			query: gql`
 				query GetQuestions {
 					allQuestions(first: 100) {
@@ -38,17 +38,20 @@ export default class Server {
 			`
 		});
 
+		return response.data.allQuestions.nodes;
+
 	}
 
 	constructor(handler: any) {
 		this.handler = handler;
-		handler.get('/:channel/questions', (req: express.Request, res: express.Response) => {
+		handler.get('/:channel/questions', async (req: express.Request, res: express.Response) => {
 			let channel = this.channels[req.params.channel];
-			//this.loadQuestions();
+			let questions = await this.loadQuestions();
 			if (channel) {
-				res.send(channel.game.players.length);
+				res.setHeader('Content-Type', 'application/json');
+				res.send(questions);
 			} else {
-				throw new Error(`Channel '${req.params.channel}' does not exists!`);
+				throw new Error(`Channel '${req.params.channel}' does not exists! The channels are ${Object.keys(this.channels)}`);
 			}
 		});
 		this.channels = {};
@@ -61,10 +64,11 @@ export default class Server {
 		this.wss = new WebSocket.Server({ server });
 
 		this.wss.on('connection', (socket: WebSocket, req: http.IncomingMessage) => {
-			let channel = this.channels[req.url];
+			let channelName = req.url.substring(1);
+			let channel = this.channels[channelName];
 			let player = new Player();
 			if (channel) {
-				for (let connection of this.channels[req.url].sockets) {
+				for (let connection of this.channels[channelName].sockets) {
 					connection.send(JSON.stringify({
 						action: "ADD_PLAYER",
 						payload: {
@@ -82,12 +86,12 @@ export default class Server {
 						payload: {}
 					};
 					game.update(message);
-					for (let conn of this.channels[req.url].sockets) {
+					for (let conn of this.channels[channelName].sockets) {
 						conn.send(JSON.stringify(message));
 					}
 				}, 10000);
 				game.connect(player);
-				channel = this.channels[req.url] = {
+				channel = this.channels[channelName] = {
 					sockets: [socket],
 					game,
 					player
@@ -101,10 +105,10 @@ export default class Server {
 			}));
 			socket.on('message', (messageCode: string) => {
 				let message = JSON.parse(messageCode);
-				let channel = this.channels[req.url]
+				let channel = this.channels[channelName]
 				let player = channel.player;
 				let responseMessage = channel.game.update(message, player);
-				for (let connection of this.channels[req.url].sockets) {
+				for (let connection of this.channels[channelName].sockets) {
 					if (socket !== connection) {
 						connection.send(JSON.stringify(responseMessage));
 					}
@@ -112,7 +116,7 @@ export default class Server {
 			});
 
 			socket.on('close', () => {
-				let channel =this.channels[req.url];
+				let channel =this.channels[channelName];
 				let index = channel.sockets.indexOf(socket);
 				let message = {
 					action: "DROP_PLAYER",
