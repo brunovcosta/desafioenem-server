@@ -3,11 +3,13 @@ import http from 'http';
 import express from 'express';
 import Player from '../common/player';
 import Game from '../common/game';
+import Question from '../common/question';
 import ApolloClient from 'apollo-boost';
 import { HttpLink } from 'apollo-link-http';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';
 import questionsQuery from './questions.graphql';
+
 
 interface Channel {
 	sockets: WebSocket[];
@@ -38,7 +40,6 @@ export default class Server {
 		});
 
 		return response.data.allQuestions.nodes;
-
 	}
 
 	private startGame ( channel: Channel ) {
@@ -112,6 +113,7 @@ export default class Server {
 			let channelName = req.url.substring(1);
 			let channel = this.channels[channelName];
 			let player = new Player();
+
 			if (channel) {
 				for (let connection of channel.sockets) {
 					connection.send(JSON.stringify({
@@ -129,6 +131,7 @@ export default class Server {
 			} else {
 				let game = new Game();
 				let questions = await this.loadQuestions();
+				questions = questions.map((q: any, i: number) => new Question(q, i));
 				game.connect(player);
 				game.questions = questions;
 				channel = this.channels[channelName] = {
