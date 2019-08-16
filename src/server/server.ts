@@ -70,24 +70,40 @@ export default class Server {
 			if (channel) {
 				channel.sockets.push(socket);
 				channel.game.connect(player);
+				if(channel.game.alivePlayers().length == 100){
+					for (let connection of this.channels[channelName].sockets) {
+						connection.send(JSON.stringify({
+							action: "START_GAME",
+							payload: {}
+						}));
+					}
+					setInterval(() => {
+						let message = {
+							action: "TIME_KILL",
+							payload: {}
+						};
+						channel.game.update(message);
+						for (let conn of this.channels[channelName].sockets) {
+							conn.send(JSON.stringify(message));
+						}
+					}, 60000);
+				}
 			} else {
 				let game = new Game();
-				// setInterval(() => {
-				// 	let message = {
-				// 		action: "TIME_KILL",
-				// 		payload: {}
-				// 	};
-				// 	game.update(message);
-				// 	for (let conn of this.channels[channelName].sockets) {
-				// 		conn.send(JSON.stringify(message));
-				// 	}
-				// }, 10000);
 				game.connect(player);
 				channel = this.channels[channelName] = {
 					sockets: [socket],
 					game,
 					player
 				}
+				setTimeout(() => {
+					for (let connection of this.channels[channelName].sockets) {
+						connection.send(JSON.stringify({
+							action: "START_GAME",
+							payload: {}
+						}));
+					}
+				}, 30000);
 			}
 			for (let connection of this.channels[channelName].sockets) {
 				connection.send(JSON.stringify({
@@ -97,12 +113,6 @@ export default class Server {
 					}
 				}));
 			}
-			// socket.send(JSON.stringify({
-			// 	action: "ADD_PLAYER",
-			// 	payload: {
-			// 		playerIndex: channel.game.players.length - 1
-			// 	}
-			// }));
 			socket.send(JSON.stringify({
 				action: "SET_INDEX",
 				payload: {
@@ -116,6 +126,13 @@ export default class Server {
 				let responseMessage = channel.game.update(message, player);
 				for (let connection of this.channels[channelName].sockets) {
 					connection.send(JSON.stringify(responseMessage));
+					if(channel.game.alivePlayers.length == 1){
+						let endGameMessage = {
+							action: "END_GAME",
+							payload: {}
+						};
+						connection.send(JSON.stringify(endGameMessage))
+					}
 				}
 			});
 
